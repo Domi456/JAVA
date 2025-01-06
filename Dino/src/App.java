@@ -14,6 +14,7 @@ public class App {
         Dino dino = new Dino();
         frame.add(dino);
         frame.pack();
+        dino.requestFocus();
         frame.setVisible(true);
     }
 }
