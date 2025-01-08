@@ -18,6 +18,6 @@ public class App {
         frame.add(spaceInvaders);
         frame.pack();
         frame.setVisible(true);
-        
+        spaceInvaders.requestFocus();        
     }
 }
