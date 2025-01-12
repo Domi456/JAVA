@@ -1,0 +1,8 @@
+{
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\domie\\OneDrive\\Asztali gép\\projects\\OTHERS\\JTattoo-1.6.13.jar"
+    ]
+}
