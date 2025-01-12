@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -6,15 +7,22 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-
 import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.undo.UndoManager;
 
 public class Notepad extends JFrame{
 
     private JFileChooser fileChooser;
+
     private JTextArea textArea;
+    public JTextArea getTextArea() {return textArea;}
+
     private File currentFile;
+
+    private UndoManager undoManager;
 
     public Notepad() {
         super("Notepad");
@@ -27,6 +35,7 @@ public class Notepad extends JFrame{
         fileChooser.setCurrentDirectory(new File("src\\assets"));
         fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
 
+        undoManager = new UndoManager();
         addGuiComponents();
     }
 
@@ -34,7 +43,14 @@ public class Notepad extends JFrame{
         addToolbar();
 
         textArea = new JTextArea();
-        add(textArea, BorderLayout.CENTER);
+        textArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            @Override
+            public void undoableEditHappened(UndoableEditEvent e) {
+                undoManager.addEdit(e.getEdit());
+            }            
+        });
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     public void addToolbar(){
@@ -47,11 +63,13 @@ public class Notepad extends JFrame{
 
         // menu options
         menuBar.add(addFileMenu());
+        menuBar.add(addEditMenu());
+        menuBar.add(addFormatMenu());
 
         add(toolBar, BorderLayout.NORTH);
     }
 
-    public JMenu addFileMenu(){
+    private JMenu addFileMenu(){
         JMenu fileMenu = new JMenu("File");
         // new
         JMenuItem newMenuItem = new JMenuItem("New");
@@ -131,12 +149,23 @@ public class Notepad extends JFrame{
         fileMenu.add(saveAsMenuItem);
         // save
         JMenuItem saveMenuItem = new JMenuItem("Save");
-        saveAsMenuItem.addActionListener(new ActionListener() {
+        saveMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //
                 if(currentFile == null){
                     saveAsMenuItem.doClick();
+                }
+                if (currentFile == null) return;
+                try{
+                    // write to current file
+                    FileWriter writer = new FileWriter(currentFile);
+                    BufferedWriter bufferedWriter = new BufferedWriter(writer);
+                    bufferedWriter.write(textArea.getText());
+                    bufferedWriter.close();
+                    writer.close();
+                }catch(Exception ex3){
+                    ex3.printStackTrace();
                 }
             }
             
@@ -144,8 +173,102 @@ public class Notepad extends JFrame{
         fileMenu.add(saveMenuItem);
         // exit
         JMenuItem exitMenuItem = new JMenuItem("Exit");
+        exitMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Notepad.this.dispose();
+            }
+            
+        });
         fileMenu.add(exitMenuItem);
 
         return fileMenu;
+    }
+
+    private JMenu addEditMenu(){
+        JMenu editMenu = new JMenu("Edit");
+        // undo ------------------------------------------------
+        JMenuItem undoMenuItem = new JMenuItem("Undo");
+        undoMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(undoManager.canUndo()){
+                    undoManager.undo();
+                }
+            }            
+        });
+        editMenu.add(undoMenuItem);
+        // redo -------------------------------------------
+        JMenuItem redoMenuItem = new JMenuItem("Redo");
+        redoMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(undoManager.canRedo())                {
+                    undoManager.redo();
+                }
+            }            
+        });
+        editMenu.add(redoMenuItem);
+
+        return editMenu;
+    }
+
+    private JMenu addFormatMenu(){
+        JMenu formatMenu = new JMenu("Format");
+
+        // word wrap -------------------------------------
+        JCheckBoxMenuItem wordWrapMenuItem = new JCheckBoxMenuItem("Word wrap");
+        wordWrapMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean isCheccked = wordWrapMenuItem.getState();
+                System.out.println("checked status: " + isCheccked);
+                if(isCheccked){
+                    textArea.setLineWrap(true);
+                    textArea.setWrapStyleWord(true);
+                }else{
+                    textArea.setLineWrap(false);
+                    textArea.setWrapStyleWord(false);
+                }
+            }            
+        });
+        formatMenu.add(wordWrapMenuItem);
+
+        // align text ------------------------------------
+        JMenu alignTextMenu = new JMenu("Align text");
+        JMenuItem alignTextLeft = new JMenuItem("Left");
+        alignTextLeft.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //System.out.println("To the left");
+                textArea.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+            }            
+        });
+        alignTextMenu.add(alignTextLeft);
+
+        JMenuItem alignTextRight = new JMenuItem("Right");
+        alignTextRight.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //System.out.println("To the right");
+                textArea.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+            }            
+        });
+        alignTextMenu.add(alignTextRight);
+        formatMenu.add(alignTextMenu);
+
+        // font ------------------------------------------
+        JMenuItem fontMenuItem = new JMenuItem("Font..");
+        fontMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new FontMenu(Notepad.this).setVisible(true);
+            }            
+        });
+        formatMenu.add(fontMenuItem);
+
+
+
+        return formatMenu;
     }
 }

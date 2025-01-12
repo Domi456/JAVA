@@ -16,3 +16,10 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
 ## Dependency Management
 
 The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+
+to add .jar file to project in vscode:
+- click java projects
+- referenced libraries, +
+- choose path of jar file
+------------------------------
+- copy jar file to lib folder of the project
