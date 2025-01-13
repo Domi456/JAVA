@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -65,6 +66,7 @@ public class Notepad extends JFrame{
         menuBar.add(addFileMenu());
         menuBar.add(addEditMenu());
         menuBar.add(addFormatMenu());
+        menuBar.add(addViewMenu());
 
         add(toolBar, BorderLayout.NORTH);
     }
@@ -267,8 +269,63 @@ public class Notepad extends JFrame{
         });
         formatMenu.add(fontMenuItem);
 
-
-
         return formatMenu;
     }
+
+    private JMenu addViewMenu(){
+        JMenu viewMenu = new JMenu("View");
+
+        JMenu zoomMenu = new JMenu("Zoom");
+
+        // zoom in
+        JMenuItem zoomInMenuItem = new JMenuItem("Zoom in");
+        zoomInMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Font currentFontSize = textArea.getFont();
+                textArea.setFont(new Font(
+                    currentFontSize.getName(),
+                    currentFontSize.getStyle(),
+                    currentFontSize.getSize() + 1
+                ));
+            }            
+        });
+        zoomMenu.add(zoomInMenuItem);
+
+        // zoom out
+        JMenuItem zoomOutMenuItem = new JMenuItem("Zoom out");
+        zoomOutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Font currentFontSize = textArea.getFont();
+                textArea.setFont(new Font(
+                    currentFontSize.getName(),
+                    currentFontSize.getStyle(),
+                    currentFontSize.getSize() - 1
+                ));
+            }            
+        });
+        zoomMenu.add(zoomOutMenuItem);
+
+        // default
+        JMenuItem defaultMenuItem = new JMenuItem("Default zoom");
+        defaultMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Font currentFontSize = textArea.getFont();
+                textArea.setFont(new Font(
+                    currentFontSize.getName(),
+                    currentFontSize.getStyle(),
+                    12
+                ));
+            }            
+        });
+        zoomMenu.add(defaultMenuItem);
+
+
+        viewMenu.add(zoomMenu);
+        return viewMenu;
+
+    }
+
 }
