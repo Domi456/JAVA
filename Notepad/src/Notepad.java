@@ -1,5 +1,7 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.ComponentOrientation;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,6 +11,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -20,6 +24,10 @@ public class Notepad extends JFrame{
 
     private JTextArea textArea;
     public JTextArea getTextArea() {return textArea;}
+    
+    private JPanel footer;
+    private JLabel wordCount;
+    private JLabel charCount;
 
     private File currentFile;
 
@@ -50,8 +58,54 @@ public class Notepad extends JFrame{
                 undoManager.addEdit(e.getEdit());
             }            
         });
+        textArea.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateWordCount();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateWordCount();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateWordCount();
+            }
+            
+        });
         JScrollPane scrollPane = new JScrollPane(textArea);
         add(scrollPane, BorderLayout.CENTER);
+
+        footer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        wordCount = new JLabel("Words: 0");
+        wordCount.setVisible(true);
+        wordCount.setHorizontalAlignment(SwingConstants.RIGHT);
+        wordCount.setForeground(Color.black);
+
+        charCount = new JLabel("Characters: 0");
+        charCount.setVisible(true);
+        charCount.setHorizontalAlignment(SwingConstants.LEFT);
+        charCount.setForeground(Color.black);
+
+        footer.add(wordCount);
+        footer.add(charCount);
+        add(footer, BorderLayout.SOUTH);        // add --> (JFrame típusú) frame.add() metódus, nem írom ki teljesen, az 'extends JFrame' miatt
+        
+    }
+
+    public void updateWordCount(){
+        String text = textArea.getText().trim();
+        int wc = 0;
+        if(!text.isEmpty()){
+            wc = text.split("\\s+").length;
+        }
+        int charC = text.length();
+        wordCount.setText("Words: " + wc);
+        charCount.setText("Characters: " + charC);
     }
 
     public void addToolbar(){
@@ -60,13 +114,13 @@ public class Notepad extends JFrame{
 
         // menu bar
         JMenuBar menuBar = new JMenuBar();
-        toolBar.add(menuBar);
+        toolBar.add(menuBar);       
 
         // menu options
         menuBar.add(addFileMenu());
         menuBar.add(addEditMenu());
         menuBar.add(addFormatMenu());
-        menuBar.add(addViewMenu());
+        menuBar.add(addViewMenu());        
 
         add(toolBar, BorderLayout.NORTH);
     }
@@ -109,6 +163,7 @@ public class Notepad extends JFrame{
                         fileText.append(readText + "\n");
                     }
                     textArea.setText(fileText.toString());
+                    bufferedReader.close();
 
                 }catch(Exception ex2){
                     ex2.printStackTrace();
