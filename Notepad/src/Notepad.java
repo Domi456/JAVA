@@ -5,6 +5,9 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -49,9 +52,9 @@ public class Notepad extends JFrame{
     }
 
     public void addGuiComponents(){
-        addToolbar();
-
         textArea = new JTextArea();
+        
+        addToolbar();
         textArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
             @Override
             public void undoableEditHappened(UndoableEditEvent e) {
@@ -76,6 +79,7 @@ public class Notepad extends JFrame{
             }
             
         });
+
         JScrollPane scrollPane = new JScrollPane(textArea);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -128,7 +132,7 @@ public class Notepad extends JFrame{
     private JMenu addFileMenu(){
         JMenu fileMenu = new JMenu("File");
         // new
-        JMenuItem newMenuItem = new JMenuItem("New");
+        JMenuItem newMenuItem = new JMenuItem("New ctrl+n");
         newMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -138,9 +142,22 @@ public class Notepad extends JFrame{
                 currentFile = null; 
             }            
         });
+
+        KeyStroke newKeyStroke = KeyStroke.getKeyStroke("control N");
+        InputMap newInputMap = textArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap newActionMap = textArea.getActionMap();
+        newInputMap.put(newKeyStroke, "New");
+        newActionMap.put("New", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("ctrl+n pressed, new");
+                newMenuItem.doClick();
+            }            
+        });
+
         fileMenu.add(newMenuItem);
         // open
-        JMenuItem openMenuItem = new JMenuItem("Open");
+        JMenuItem openMenuItem = new JMenuItem("Open ctrl+o");
         openMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -170,6 +187,20 @@ public class Notepad extends JFrame{
                 }
             }            
         });
+
+        // ctrl + o = open
+        KeyStroke openKeyStroke = KeyStroke.getKeyStroke("control O");
+        InputMap openinputMap = textArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap openactionMap = textArea.getActionMap();
+        openinputMap.put(openKeyStroke, "Open");
+        openactionMap.put("Open", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("ctrl+o pressed, opening...");
+                openMenuItem.doClick();
+            }            
+        });
+
         fileMenu.add(openMenuItem);
         // save as
         JMenuItem saveAsMenuItem = new JMenuItem("Save as");
@@ -205,7 +236,7 @@ public class Notepad extends JFrame{
         });
         fileMenu.add(saveAsMenuItem);
         // save
-        JMenuItem saveMenuItem = new JMenuItem("Save");
+        JMenuItem saveMenuItem = new JMenuItem("Save ctrl+s");
         saveMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -227,6 +258,19 @@ public class Notepad extends JFrame{
             }
             
         });
+        // ctrl + s = save
+        KeyStroke saveKeyStroke = KeyStroke.getKeyStroke("control S");
+        InputMap inputMap = textArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = textArea.getActionMap();
+        inputMap.put(saveKeyStroke, "Save");
+        actionMap.put("Save", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("ctrl+s pressed, saving...");
+                saveMenuItem.doClick();
+            }            
+        });
+
         fileMenu.add(saveMenuItem);
         // exit
         JMenuItem exitMenuItem = new JMenuItem("Exit");
@@ -245,7 +289,7 @@ public class Notepad extends JFrame{
     private JMenu addEditMenu(){
         JMenu editMenu = new JMenu("Edit");
         // undo ------------------------------------------------
-        JMenuItem undoMenuItem = new JMenuItem("Undo");
+        JMenuItem undoMenuItem = new JMenuItem("Undo ctrl+z");
         undoMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -254,9 +298,22 @@ public class Notepad extends JFrame{
                 }
             }            
         });
+
+        KeyStroke undoKeyStroke = KeyStroke.getKeyStroke("control Z");
+        InputMap undoInputMap = textArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap undoactionMap = textArea.getActionMap();
+        undoInputMap.put(undoKeyStroke, "Undo");
+        undoactionMap.put("Undo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("ctrl+z pressed, undo");
+                undoMenuItem.doClick();
+            }            
+        });
+
         editMenu.add(undoMenuItem);
         // redo -------------------------------------------
-        JMenuItem redoMenuItem = new JMenuItem("Redo");
+        JMenuItem redoMenuItem = new JMenuItem("Redo ctrl+z");
         redoMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -265,6 +322,19 @@ public class Notepad extends JFrame{
                 }
             }            
         });
+
+        KeyStroke redoKeyStroke = KeyStroke.getKeyStroke("control R");
+        InputMap redoInputMap = textArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap redoactionMap = textArea.getActionMap();
+        redoInputMap.put(redoKeyStroke, "Redo");
+        redoactionMap.put("Redo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("ctrl+r pressed, redo");
+                redoMenuItem.doClick();
+            }            
+        });
+
         editMenu.add(redoMenuItem);
 
         return editMenu;
@@ -333,7 +403,7 @@ public class Notepad extends JFrame{
         JMenu zoomMenu = new JMenu("Zoom");
 
         // zoom in
-        JMenuItem zoomInMenuItem = new JMenuItem("Zoom in");
+        JMenuItem zoomInMenuItem = new JMenuItem("Zoom in ctrl+scroll");
         zoomInMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -348,7 +418,7 @@ public class Notepad extends JFrame{
         zoomMenu.add(zoomInMenuItem);
 
         // zoom out
-        JMenuItem zoomOutMenuItem = new JMenuItem("Zoom out");
+        JMenuItem zoomOutMenuItem = new JMenuItem("Zoom out ctrl+scroll");
         zoomOutMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -377,6 +447,21 @@ public class Notepad extends JFrame{
         });
         zoomMenu.add(defaultMenuItem);
 
+        textArea.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                if((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0){
+                    // scroll upwards
+                    if(e.getWheelRotation() < 0){
+                        zoomInMenuItem.doClick();
+                    }
+                    // scroll downwards
+                    else if(e.getWheelRotation() > 0){
+                        zoomOutMenuItem.doClick();
+                    }
+                }
+            }            
+        });
 
         viewMenu.add(zoomMenu);
         return viewMenu;
