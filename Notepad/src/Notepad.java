@@ -97,8 +97,7 @@ public class Notepad extends JFrame{
 
         footer.add(wordCount);
         footer.add(charCount);
-        add(footer, BorderLayout.SOUTH);        // add --> (JFrame típusú) frame.add() metódus, nem írom ki teljesen, az 'extends JFrame' miatt
-        
+        add(footer, BorderLayout.SOUTH);        // add --> (JFrame típusú) frame.add() metódus, nem írom ki teljesen, az 'extends JFrame' miatt     
     }
 
     public void updateWordCount(){

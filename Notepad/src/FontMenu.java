@@ -6,6 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -21,8 +25,9 @@ public class FontMenu extends JDialog{
     private Notepad source;
     private JTextField currentFont, currentFontStyleField, currentFontSizeField;
     private JPanel currentColorPanel;
+    private String CONFIG_FILE = "settings.properties";
 
-    public FontMenu(Notepad source) {
+    public FontMenu(Notepad source){
         this.source = source;
         setTitle("Font menu");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -31,6 +36,7 @@ public class FontMenu extends JDialog{
         setModal(true);
         setLayout(null);
         setResizable(false);
+        loadSettings();
 
         addMenuComponents();
     }
@@ -85,6 +91,8 @@ public class FontMenu extends JDialog{
 
                 source.getTextArea().setFont(newFont);
                 source.getTextArea().setForeground(fontColor);
+
+                saveSettings();
 
                 FontMenu.this.dispose();
             }            
@@ -390,9 +398,46 @@ public class FontMenu extends JDialog{
                 Color c = JColorChooser.showDialog(null, "Select a color", Color.black);
                 currentColorPanel.setBackground(c);
             }            
-        });
+        });     
+
         add(chooseColorButton);
 
+    }
+
+    private void saveSettings() {
+        Properties prop = new Properties();
+        prop.setProperty("fontsize", currentFontSizeField.getText());
+        prop.setProperty("fontcolor", Integer.toHexString(currentColorPanel.getBackground().getRGB()));
+        prop.setProperty("fontfamily", currentFont.getText());
+        
+        try(FileOutputStream out = new FileOutputStream(CONFIG_FILE)){
+            prop.store(out, "Font setting");
+            System.out.println("Saved fontsettings");
+        }catch(IOException e){
+            System.out.println("Failed to save fontsettings.");
+        }
+    }
+
+    private void loadSettings(){
+        Properties prop = new Properties();
+        try(FileInputStream in = new FileInputStream(CONFIG_FILE)){
+            prop.load(in);
+
+            String font_Name = prop.getProperty("fontfamily", "Chiller");
+            int font_Size = Integer.parseInt(prop.getProperty("fontsize", "22"));
+            Color savedColor = new Color((int)Long.parseLong(prop.getProperty("fontcolor", "ff8000"), 16), true);
+
+            source.setFont(new Font(font_Name, Font.PLAIN, font_Size));
+            source.setForeground(savedColor);
+
+            System.out.println("Loaded fontsettings: " + font_Name + font_Size + savedColor);
+            currentFont = new JTextField(font_Name);
+            currentFontSizeField = new JTextField(String.valueOf(font_Size));
+            //currentColorPanel.setBackground(savedColor);
+
+        } catch(IOException ex){
+            System.out.println("Failed to load fontsettings");
+        }
     }
 
 }
