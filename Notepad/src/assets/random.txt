@@ -1,4 +1,7 @@
+ezeket java 11-el:
 random
 oshdfahokas
-asifhaois
-aioinhaoiw
+-----------------
+ezt ítranm bele java 23-al:
+ezt
+ezt
