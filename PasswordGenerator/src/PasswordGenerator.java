@@ -108,9 +108,9 @@ public class PasswordGenerator extends JFrame{
                     }
                 }
                 catch(NumberFormatException ex){
-                    System.out.println("letters were given, instead of numbers");
+                    System.out.println("letters were given instead of numbers");
                 }
-            }            
+            }
         });
         add(generateButton);
     }
