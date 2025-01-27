@@ -60,7 +60,8 @@ public class MorseCodeGUI extends JFrame implements KeyListener{
         JLabel morseLabel = new JLabel("Morse: ");
         morseLabel.setFont(new Font("Old English Text MT", Font.PLAIN, 22));
         morseLabel.setForeground(Color.white);
-        morseLabel.setBounds(20, 100, 200, 30);
+        morseLabel.setBounds(20, 368, 200, 30);
+        add(morseLabel);
 
         morseCodeTextArea = new JTextArea();
         morseCodeTextArea.setFont(new Font("Old English Text MT", Font.PLAIN, 22));

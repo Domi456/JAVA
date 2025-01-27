@@ -1,5 +1,4 @@
 import java.util.HashMap;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
@@ -142,21 +141,21 @@ public class MorseBackend {
                 }else if(c == '-'){
                     playBeep(sourceDataLine, dashDuration);
                     try {
-                        Thread.sleep(dotDuration);
+                        Thread.sleep(dashDuration);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }else if(c == '/'){
                     playBeep(sourceDataLine, slashDuration);
                     try {
-                        Thread.sleep(dotDuration);
+                        Thread.sleep(slashDuration);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }
             try {
-                Thread.sleep(dotDuration);
+                Thread.sleep(slashDuration);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -170,7 +169,7 @@ public class MorseBackend {
         byte[] data = new byte[duration * 44100 / 1000];
         for (int i = 0; i < data.length; i++) {
             // sin rate angle, based on the sample rate and frequency
-            double angle = i / (44100 / 440) * 2 * Math.PI;
+            double angle = (2.0 * Math.PI * i * 440) / 44100;
             data[i] = (byte) (Math.sin(angle) * 127);
 
         }
